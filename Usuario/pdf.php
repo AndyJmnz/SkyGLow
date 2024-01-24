@@ -142,10 +142,25 @@
     $pdf->Cell(0, 10, 'Resumen de tu compra', 1, 1, 'C', 1);
     $pdf->Cell(0, 10, '$' . $Totalote , 1, 1, 'C');
 
-    $pdf->Output('Reporte.pdf', 'F');
+    $timestamp = time();
+    $pdfName = 'Reporte_'.$idUsuario.'_'.$timestamp.'.pdf';
+    $pdf->Output($pdfName, 'F');
 
     // Enviar correo
     require_once 'enviarcorreo.php';
+
+    $webdavUrl = 'http://10.0.0.6/';
+    $credentials = 'andy:1234';
+
+    $command = "curl --upload-file $pdfName -u $credentials $webdavUrl";
+    exec($command, $output, $exitcode);
+
+    if ($exitCode === 0){
+    	if (DEBUG) echo "PDF enviado correctamente./n";
+    }else{
+    	if (DEBUG) echo "Error al enviar el codigo.$exitCode";
+    	if (DEBUG) print_r($output);
+    }
 
     try {
         enviar_correo('Reporte.pdf', $data['correo']);

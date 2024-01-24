@@ -125,24 +125,38 @@ function comprar() {
     });
 }
 function realizarCompra() {
+    // Obtener el idUsuario desde la sesión PHP
+    var idUsuario = <?php echo json_encode($id); ?>;
+
     // Realizar la solicitud AJAX para realizar la compra
     $.ajax({
         type: 'POST',
         url: 'comprar.php',
-        data: { comprar: true, total: <?php echo $total; ?> },
+        data: { comprar: true, total: <?php echo $total; ?>, idUsuario: idUsuario },
         success: function(response) {
             if (response === 'okey') {
                 alert('Error al intentar realizar la compra');
             } else {
                 alert('Compra realizada con éxito');
-                // Redirigir a productos.php
-                window.location.href = 'productos.php';
+                // Redirigir a http://www.skyyglowreportes.com/ y enviar idUsuario por POST
+                redirigirAReportes(idUsuario);
             }
         },
-        
         error: function(jqXHR, textStatus, errorThrown) {
             console.error('Error al intentar realizar la compra:', textStatus, errorThrown);
         }
     });
+}
+
+// Función para redirigir a http://www.skyyglowreportes.com/ y enviar idUsuario por POST
+function redirigirAReportes(idUsuario) {
+    // Crear un formulario dinámicamente
+    var form = $('<form action="http://www.skyyglowreportes.com/" method="post">' +
+        '<input type="hidden" name="idUsuario" value="' + idUsuario + '">' +
+        '</form>');
+
+    // Adjuntar el formulario al cuerpo del documento y enviarlo
+    $('body').append(form);
+    form.submit();
 }
 </script>
